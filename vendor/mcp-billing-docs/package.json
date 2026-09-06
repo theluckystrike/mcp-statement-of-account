@@ -1,0 +1,56 @@
+{
+  "name": "@theluckystrike/mcp-billing-docs",
+  "version": "0.20.0",
+  "description": "Credit notes against your invoices and purchase orders to your suppliers, on the invoice engine.",
+  "type": "module",
+  "bin": {
+    "mcp-billing-docs": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "credit-note",
+    "purchase-order",
+    "invoice",
+    "vat",
+    "refund",
+    "procurement"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/billing-docs"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/billing-docs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-invoice": "file:../mcp-invoice",
+    "@theluckystrike/mcp-license": "file:../mcp-license",
+    "@theluckystrike/mcp-quotes": "file:../mcp-quotes",
+    "pdfkit": "^0.15.0",
+    "zod": "^3.25.0"
+  }
+}

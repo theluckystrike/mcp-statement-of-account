@@ -1,0 +1,67 @@
+{
+  "name": "@theluckystrike/mcp-statement-of-account",
+  "version": "0.20.0",
+  "description": "Per-client statements of account, aging buckets and dunning letters from your own books.",
+  "type": "module",
+  "bin": {
+    "mcp-statement-of-account": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --declaration && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "statement-of-account",
+    "aging",
+    "dunning",
+    "accounts-receivable",
+    "invoice",
+    "accounting"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/statement-of-account"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/statement-of-account",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-billing-docs": "file:vendor/mcp-billing-docs",
+    "@theluckystrike/mcp-deposits": "file:vendor/mcp-deposits",
+    "@theluckystrike/mcp-invoice": "file:vendor/mcp-invoice",
+    "@theluckystrike/mcp-license": "file:vendor/mcp-license",
+    "@theluckystrike/mcp-quotes": "file:vendor/mcp-quotes",
+    "pdfkit": "^0.15.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0",
+    "@types/pdfkit": "^0.13.4"
+  }
+}
