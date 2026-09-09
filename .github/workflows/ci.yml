@@ -15,8 +15,10 @@ jobs:
     name: install, build, test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # v5 of both: v4 pins a Node 20 action runtime, which the runner now reports as
+      # deprecated on every run (measured on mcp-statement-of-account run 34320638505).
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "22"
       # No lockfile is committed: the mirror pins its own @theluckystrike dependencies
