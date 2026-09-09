@@ -21,6 +21,8 @@ back into your invoices, and it never invents a late fee.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
+npm publish for `@theluckystrike/mcp-statement-of-account` is pending, so `npx -y @theluckystrike/mcp-statement-of-account` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.
+
 ## Install
 
 ### Claude Desktop

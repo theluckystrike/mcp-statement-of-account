@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-billing-docs",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Credit notes against your invoices and purchase orders to your suppliers, on the invoice engine.",
   "type": "module",
   "bin": {

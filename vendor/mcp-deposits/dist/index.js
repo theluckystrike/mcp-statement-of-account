@@ -288,7 +288,7 @@ server.registerTool("deposit_record", {
 });
 server.registerTool("deposit_list", {
     title: "List deposits",
-    description: "List deposits with what was received, applied, refunded and still held on each. Filter by client, by status held, applied or refunded, by kind and by received date range.",
+    description: "List deposits newest first: DEP number, client, kind, date, reference and what was received, applied, refunded and still held, with the same four totalled per currency. Filter by client, status, kind, date.",
     inputSchema: {
         client: z.string().optional().describe("Only deposits for this client id, exact name, or a name containing this text"),
         status: z.enum(["held", "applied", "refunded", "all"]).optional().describe('Default "all". held means some of the money is still held'),
@@ -320,7 +320,7 @@ server.registerTool("deposit_list", {
 });
 server.registerTool("deposit_apply", {
     title: "Apply a deposit to an invoice",
-    description: "Apply part or all of a held deposit to one invoice: records that amount as a payment on the invoice through the invoice engine. Refuses more than is held or more than the invoice still owes.",
+    description: "Apply part of a held deposit to one invoice: it records that amount as a PAYMENT through the invoice server. amount_minor defaults to the lesser of held and owed. More than either, or a pre-arrival date, is refused.",
     inputSchema: {
         id: z.string().min(1, "id is required").describe("Deposit id such as DEP-2026-0001, or an exact client name"),
         invoice: z.string().min(1, "invoice is required").describe("The invoice number to apply it to, e.g. INV-2026-0001"),
@@ -482,7 +482,7 @@ server.registerTool("deposit_refund", {
  */
 server.registerTool("deposit_delete", {
     title: "Delete a deposit recorded by mistake",
-    description: "Delete a deposit recorded by mistake and free that month's free-tier slot again. Only a deposit with nothing applied to an invoice and nothing refunded can go; one whose money moved is refused, naming what holds it.",
+    description: "Delete a deposit that never moved money, freeing that month's free-tier slot. One with anything applied or refunded is refused, naming it, since a payment or refund would be left with nothing behind it.",
     inputSchema: {
         id: z.string().min(1, "id is required").describe("Deposit id such as DEP-2026-0001, or an exact client name"),
     },
@@ -603,7 +603,7 @@ function statementFor(clientRef, currency) {
 }
 server.registerTool("deposit_statement_text", {
     title: "Plain-text deposit statement",
-    description: "Turn one client's deposits into a plain-text statement with every movement in date order and the closing balance, ready to paste into an email. Free on every tier.",
+    description: "Turn one client's deposits into a plain-text statement to paste into an email: every movement in date order and the closing balance held. Pass currency when they have more than one. Free on every tier.",
     inputSchema: {
         client: z.string().min(1, "client is required").describe("Client id, exact name or a name containing this text"),
         currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional()
@@ -719,7 +719,7 @@ server.registerTool("deposit_statement_pdf", {
 });
 server.registerTool("deposits_report", {
     title: "What is held, and for how long",
-    description: "What is held per currency, the oldest held deposits, and every deposit received more than N days ago with none of it applied to an invoice. Pro.",
+    description: "The deposit book at a date: held per currency, received, applied and refunded, the oldest holdings with days held, and every deposit older than N days with nothing applied. Pro; deposit_balance is free.",
     inputSchema: {
         older_than_days: z.number().int().min(0).max(36500).optional().describe("Flag deposits received this many days ago or more with nothing applied. Default 90"),
         as_of: z.string().optional().describe("YYYY-MM-DD to count from. Defaults to today"),

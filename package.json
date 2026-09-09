@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-statement-of-account",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Per-client statements of account, aging buckets and dunning letters from your own books.",
   "type": "module",
   "bin": {

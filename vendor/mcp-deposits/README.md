@@ -15,6 +15,8 @@ note and the invoice next to it and agrees with them to the minor unit.
 
 ![deposits demo](../../assets/demo-deposits.gif)
 
+npm publish for `@theluckystrike/mcp-deposits` is pending, so `npx -y @theluckystrike/mcp-deposits` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.
+
 ## Install
 
 Claude Desktop (`claude_desktop_config.json`):

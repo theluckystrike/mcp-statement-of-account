@@ -25,7 +25,7 @@ const gate = createLicenseGate({ product: "invoice" });
  * stops) reading the shared profile cannot go unnoticed here again.
  */
 export const PROFILE_READERS = [
-    "asset-register", "bank-statement", "barcode", "calendar", "catalogue", "change-order", "clauses", "currency", "docx", "expense-tracker",
+    "asset-register", "bank-statement", "barcode", "calendar", "catalogue", "change-order", "clauses", "currency", "delivery-schedule", "docx", "expense-tracker",
     "image", "kanban", "pdf", "per-diem", "petty-cash", "quotes", "resume", "statement-of-account", "time-tracker", "timezone",
     "work-order",
 ];
@@ -388,7 +388,7 @@ function resolveForDelete(ref) {
 }
 server.registerTool("client_delete", {
     title: "Delete a client",
-    description: "Delete a stored client that nothing uses. A client still referenced by an invoice, quote, credit note, purchase order, deposit, statement or recurring schedule is refused, with the document named.",
+    description: "Delete one stored client that nothing refers to. A client named on any invoice, quote, credit note, purchase order, deposit, statement or schedule is refused with those documents listed.",
     inputSchema: {
         client: z.string().describe("Client name or id, exactly as client_list shows it"),
     },
@@ -421,7 +421,7 @@ server.registerTool("client_delete", {
     }
 });
 server.registerTool("client_list", {
-    title: "List clients", description: "List every stored client with their id, address, email and VAT id.",
+    title: "List clients", description: "List every stored client with id, address, email and VAT id. No arguments, and it writes nothing. With none stored it says so: invoice_create also creates a client from the name you pass.",
     inputSchema: {},
 }, async () => {
     const clients = getClients();
@@ -573,7 +573,7 @@ function createInvoice(a) {
 }
 server.registerTool("invoice_create", {
     title: "Create an invoice",
-    description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused) and returns the stored invoice with its subtotal, discount, one tax line per rate and the total.",
+    description: "Create an invoice from line items and return the record with its next, never-reused number. unit_price is in MAJOR units; lines are rounded then summed. One currency per invoice. Free: 3 a month.",
     inputSchema: {
         client: z.string().describe("Client name or id. Unknown names are added automatically"),
         items: z.array(itemSchema).describe("Line items. Amounts are held as integer minor units and every line is rounded first, then summed, so the printed lines can never disagree with the total. A line may carry its own currency"),
@@ -688,7 +688,7 @@ server.registerTool("invoice_from_hours", {
 });
 server.registerTool("invoice_list", {
     title: "List invoices",
-    description: "List invoices, optionally filtered by status (unpaid, paid, partial), client, and an issue-date range.",
+    description: "List invoices by number: client, dates, currency, subtotal, discount, tax lines, total, status, paid, credited and the balance still due after any credit note. Filter by status, client and date range.",
     inputSchema: {
         status: z.enum(["unpaid", "paid", "partial"]).optional(),
         client: z.string().optional(),
@@ -739,7 +739,7 @@ server.registerTool("invoice_get", {
 });
 server.registerTool("invoice_mark_paid", {
     title: "Mark an invoice paid",
-    description: "Record a payment. It ADDS to what is already paid (never replaces it) and refuses an amount that would overpay, naming the open balance. Omit amount to pay off the rest in full.",
+    description: "Record a payment on one invoice. amount is in MAJOR units and ADDS to what is paid, never replaces it; omit it to settle the rest. An overpayment is refused, naming the open balance.",
     inputSchema: {
         number: z.string(),
         paid_date: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
@@ -804,7 +804,7 @@ server.registerTool("invoice_mark_paid", {
 });
 server.registerTool("invoice_pdf", {
     title: "Render invoice PDF",
-    description: "Call this tool to render a stored invoice as an A4 PDF you can send. Returns the path of the file written.",
+    description: "Call this tool to write one stored invoice as an A4 PDF and return the path: issuer, BILL TO, dates, items, taxes and totals. Free stamps a credit line and no logo; Pro renders it unbranded with your logo.",
     inputSchema: {
         number: z.string().describe("Invoice number to render, as returned by invoice_create"),
         out_path: z.string().optional().describe("Where to write the PDF; defaults to <data dir>/pdf/<number>.pdf. The page carries the issuer block, the BILL TO client block, dates, an item table with wrapped descriptions, subtotal, discount, one tax line per rate, the total, payment details and notes, and every money value on it carries its currency code. Use a .pdf path: the bytes written are always PDF"),
@@ -843,7 +843,7 @@ server.registerTool("invoice_pdf", {
 });
 server.registerTool("overdue_report", {
     title: "Overdue report",
-    description: "Answer \"which invoices are overdue?\": every unpaid or partly paid invoice past its due date, with days overdue, the outstanding amount per invoice and the outstanding total per currency. Free and unlimited.",
+    description: "List every invoice not paid in full whose due date has passed, worst first, with days overdue and the amount, then a total per currency. Free. Use invoice_list for everything still open.",
     inputSchema: { as_of: z.string().optional().describe("YYYY-MM-DD, defaults to today") },
 }, async (a) => {
     try {

@@ -17,6 +17,8 @@ minor unit.
 
 ![billing-docs demo](../../assets/demo-billing-docs.gif)
 
+npm publish for `@theluckystrike/mcp-billing-docs` is pending, so `npx -y @theluckystrike/mcp-billing-docs` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.
+
 ## Install
 
 Claude Desktop (`claude_desktop_config.json`):

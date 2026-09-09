@@ -185,7 +185,7 @@ const currencyArg = z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-lett
 
 server.registerTool("statement_build", {
   title: "Build a statement of account",
-  description: "Build one client's statement of account for a period: opening balance, invoices issued, payments received, credit notes, deposits applied and closing balance, in minor units and formatted.",
+  description: "Build one client's statement for a period: opening, invoices, payments with deposits applied broken out, credit notes and closing, formatted and in minor units. Free: 5 a month; a rebuild is free.",
   inputSchema: {
     client: clientArg,
     from: str("from", 10).describe("First day of the period, YYYY-MM-DD. Everything dated before it becomes the opening balance"),
@@ -206,7 +206,7 @@ server.registerTool("statement_build", {
 
 server.registerTool("statement_aging", {
   title: "Age the open invoices",
-  description: "Break what is owed into 0-30, 31-60, 61-90 and over 90 days past the invoice due date as at a chosen date, for one client or for every client, per currency. Free and unlimited.",
+  description: "Age open invoices into 0-30, 31-60, 61-90 and over 90 days past DUE date at a date, per client and currency, with the invoices themselves. Free. statements_report rolls up the whole book instead.",
   inputSchema: {
     client: str("client", MAX_NAME).optional().describe("One client id or name. Omit to age every client in the books"),
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Only this currency. Omit for every currency, each aged separately"),
@@ -317,7 +317,7 @@ function statementLines(st: Statement, day: string, greeting?: string, signOff?:
 
 server.registerTool("statement_text", {
   title: "Plain-text statement of account",
-  description: "Turn one client's statement into a plain-text ledger with every movement in date order, the opening and closing balances and a sign-off, ready to paste into an email.",
+  description: "Turn one client's statement into a plain-text letter for an email: movements in date order, opening and closing balances, deposit held, a sign-off. It counts toward the 5 a month; statement_pdf writes the A4 page.",
   inputSchema: {
     client: clientArg,
     from: str("from", 10).describe("First day of the period, YYYY-MM-DD"),
@@ -345,7 +345,7 @@ server.registerTool("statement_text", {
 
 server.registerTool("statement_pdf", {
   title: "Render the statement of account as a PDF",
-  description: "Call this tool to write one client's A4 statement of account and return the file path. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro.",
+  description: "Call this tool to write one client's A4 statement of account and return the path. Titled STATEMENT OF ACCOUNT, movements in date order, BALANCE OUTSTANDING at the foot, and no VAT re-added. Pro.",
   inputSchema: {
     client: clientArg,
     from: str("from", 10).describe("First day of the period, YYYY-MM-DD"),
@@ -468,7 +468,7 @@ function bankLines(): string[] {
 
 server.registerTool("dunning_text", {
   title: "Write a dunning letter",
-  description: "Write a payment chaser for one client at level 1 friendly, 2 firm or 3 final demand, listing every overdue invoice with its age and total, plus your bank details when the profile has them. Level 3 is Pro.",
+  description: "Write a payment chaser at level 1 friendly, 2 firm or 3 final demand: every OVERDUE invoice with its age, the total and your bank details. Nothing overdue is refused. No interest is stated. Level 3 is Pro.",
   inputSchema: {
     client: clientArg,
     level: z.number().int().min(1, "level is 1, 2 or 3").max(3, "level is 1, 2 or 3")
@@ -541,7 +541,7 @@ server.registerTool("dunning_text", {
 
 server.registerTool("statements_report", {
   title: "What every client owes",
-  description: "Show what is outstanding across every client, totalled per currency and aged, with the oldest overdue invoice and the clients carrying it. Pro.",
+  description: "Receivables across every client at a date: totals and aging per currency, clients ranked by how much is OVERDUE, and the oldest overdue invoice. Pro. statement_aging is the free per-client view.",
   inputSchema: {
     as_of: str("as_of", 10).optional().describe("Age the invoices as at this date, YYYY-MM-DD. Defaults to today"),
     limit: z.number().int().min(1).max(200).optional().describe("How many clients to list, worst first. Default 20"),

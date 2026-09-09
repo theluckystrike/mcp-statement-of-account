@@ -2,19 +2,19 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/billing-docs-credit-notes-purchase-orders",
   "description": "Credit notes against your invoices and purchase orders to suppliers, with VAT and A4 PDFs.",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/billing-docs"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/billing-docs",
+  "websiteUrl": "https://mcp.zovo.one/s/billing-docs",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@theluckystrike/mcp-billing-docs",
-      "version": "0.20.0",
+      "version": "0.21.0",
       "transport": {
         "type": "stdio"
       },

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-deposits",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Security and retainer deposits per client: hold them, apply them to invoices, refund them.",
   "type": "module",
   "bin": {

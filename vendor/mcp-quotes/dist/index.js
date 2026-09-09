@@ -298,7 +298,7 @@ function issueInvoiceFromQuote(q, dueDays, issue) {
 const server = new McpServer({ name: "mcp-quotes", version: VERSION }, { capabilities: { tools: {}, resources: {}, prompts: {} } });
 server.registerTool("quote_create", {
     title: "Create a quote",
-    description: "Quote a client: line items with quantity and unit price in minor units, VAT per line or the business default, an optional discount and a validity window. Returns the quote id and the totals.",
+    description: "Create a quote and return its Q number and totals. unit_price is in MAJOR units; currency, VAT and the issuer come from the shared profile. It expires by itself after validity_days. Free: 5 open quotes.",
     inputSchema: {
         client: z.string().min(1, "client is required").max(MAX_CLIENT_NAME, `client must be ${MAX_CLIENT_NAME} characters or fewer`)
             .describe("Client name or id. A name the invoice server already knows brings its address, email and VAT id onto the quote"),
@@ -405,7 +405,7 @@ server.registerTool("quote_create", {
 });
 server.registerTool("quote_list", {
     title: "List quotes",
-    description: "Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range.",
+    description: "List quotes newest first: id, client, dates, state, days left while open, currency, total and the invoice number once accepted. State is read against today, so a lapsed quote shows as expired.",
     inputSchema: {
         state: z.enum(["open", "expired", "accepted", "declined", "all"]).optional().describe('Default "all". "open" excludes quotes whose validity has run out; "expired" is only those'),
         client: z.string().optional().describe("Only quotes for clients whose name contains this text"),
@@ -435,7 +435,7 @@ server.registerTool("quote_list", {
 });
 server.registerTool("quote_get", {
     title: "Show one quote",
-    description: "The full stored record for one quote: every line with its unit price and VAT, the totals, the validity date, the notes and, when it was accepted, the invoice it became.",
+    description: "Return one quote in full by Q number or exact client name: lines with unit price and VAT, totals, dates, the state today with days left, notes, and the invoice it became once accepted. Reads only.",
     inputSchema: { id: z.string().describe("Quote id such as Q-2026-0001, or an exact client name") },
 }, async (a) => {
     try {
@@ -527,7 +527,7 @@ server.registerTool("quote_update", {
 });
 server.registerTool("quote_send_text", {
     title: "Plain-text quote to paste into email",
-    description: "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier.",
+    description: "Turn a quote into a plain-text summary to paste into an email: the line table, VAT lines, total and validity date, with a sign-off from the shared profile. Free; quote_pdf writes the A4 document.",
     inputSchema: {
         id: z.string().describe("Quote id such as Q-2026-0001"),
         greeting: z.string().optional().describe("Opening line, default \"Hello\" plus the client name"),
@@ -679,7 +679,7 @@ server.registerTool("quote_accept", {
 });
 server.registerTool("quote_decline", {
     title: "Decline a quote",
-    description: "Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back.",
+    description: "Mark a quote lost, with a reason kept on the record, freeing a free-tier open slot and counting in the win rate. An accepted quote is refused, naming the invoice it became. Free on every tier.",
     inputSchema: {
         id: z.string().describe("Quote id such as Q-2026-0001"),
         reason: text("reason", MAX_NOTES).optional().describe("Why it was lost, e.g. \"price\" or \"went in-house\". Kept on the record"),
@@ -762,7 +762,7 @@ server.registerTool("quote_delete", {
 });
 server.registerTool("quote_pdf", {
     title: "Render the quote as a PDF",
-    description: "Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro.",
+    description: "Call this tool to write one quote as an A4 PDF and return the path: the invoice layout with the validity date, an acceptance block, and an EXPIRED marking once it has lapsed. Pro.",
     inputSchema: {
         id: z.string().describe("Quote id such as Q-2026-0001"),
         out_path: z.string().optional().describe("Where to write the file. Defaults to the quotes data directory under pdf/"),

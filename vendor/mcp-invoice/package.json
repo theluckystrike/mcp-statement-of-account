@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-invoice",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Make real, sendable PDF invoices from a sentence. Clients, numbering that never repeats, VAT lines, discounts and overdue reports, all stored locally.",
   "type": "module",
   "bin": {
