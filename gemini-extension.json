@@ -1,0 +1,22 @@
+{
+  "name": "mcp-statement-of-account",
+  "version": "0.21.0",
+  "description": "MCP server for customer statements of account, accounts receivable and invoice aging. The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted.",
+  "settings": [
+    {
+      "name": "mcp.zovo.one token",
+      "description": "A free anonymous token from https://mcp.zovo.one/mcp/token, or your Pro key. One token is one data space, and it is refreshed for another 30 days on every write.",
+      "envVar": "ZOVO_MCP_TOKEN",
+      "sensitive": true
+    }
+  ],
+  "mcpServers": {
+    "statement-of-account": {
+      "httpUrl": "https://mcp.zovo.one/mcp/statement-of-account",
+      "headers": {
+        "Authorization": "Bearer ${ZOVO_MCP_TOKEN}"
+      },
+      "description": "The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted."
+    }
+  }
+}
